@@ -1,0 +1,26 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  cypress:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Install dependencies
+        run: npm install
+      - name: Run Cypress tests
+        run: npx cypress run
+
+  zap:
+    runs-on: ubuntu-latest
+    steps:
+      - name: ZAP Security Scan
+        uses: zaproxy/zap2docker-stable
+        with:
+          args: zap.sh -quickstart -quickstart-port 8080
