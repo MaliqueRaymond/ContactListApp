@@ -74,7 +74,7 @@ To get started, first, clone this repository to your local machine.
 
 #### 3. ZAP Security Scanning
 
-The GitHub Actions workflow also includes a security scan using **OWASP ZAP** to detect potential vulnerabilities like XSS. This runs as a separate job in the GitHub Actions workflow.
+The GitHub Actions workflow also includes a security scan using **OWASP ZAP** to detect potential vulnerabilities like XSS and SQL Injection. This runs as a separate job in the GitHub Actions workflow.
 
 ### Documentation and Resources
 
