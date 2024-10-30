@@ -68,14 +68,6 @@ To get started, first, clone this repository to your local machine.
   npx cypress run
   ```
 
-- **Running Specific Test Cases**:
-  
-  Individual test cases are located in separate files within the `cypress/integration` folder. You can execute a specific test case by specifying the test file name, like so:
-
-  ```bash
-  npx cypress run --spec "cypress/integration/api_tests.spec.js"
-  ```
-
 #### 2. GitHub Actions Automated Testing
 
 - GitHub Actions will automatically trigger tests on every push or pull request. Test results are visible in the **Actions** tab in your GitHub repository.
