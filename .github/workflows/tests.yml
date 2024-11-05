@@ -56,8 +56,7 @@ jobs:
       - name: Run OWASP ZAP Full Scan
         uses: zaproxy/action-full-scan@v0.2.0
         with:
-          target: 'https://thinking-tester-contact-list.herokuapp.com/'  # Replace with your target URL if different
-          report-format: 'HTML'  # Format of the scan report
+          target: 'https://thinking-tester-contact-list.herokuapp.com/'  
 
       - name: Upload ZAP Report
         uses: actions/upload-artifact@v4
@@ -65,24 +64,3 @@ jobs:
           name: zap-report-${{ github.run_id }}
           path: /zap/wrk/*.html
 
-  # Optional: Download artifacts (from previous runs or repositories)
-  download-artifacts:
-    name: Download Artifacts from Previous Runs
-    needs: [cypress-tests, zap-scan]
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Download Cypress Screenshots
-        uses: actions/download-artifact@v4
-        with:
-          name: cypress-screenshots-${{ github.run_id }}
-          path: artifacts/screenshots
-
-      - name: Download ZAP Report
-        uses: actions/download-artifact@v4
-        with:
-          name: zap-report-${{ github.run_id }}
-          path: artifacts/zap-report
