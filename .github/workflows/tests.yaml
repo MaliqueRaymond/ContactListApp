@@ -1,8 +1,8 @@
 name: Full Test Suite Workflow
 
 permissions:
-  contents: read  # Allow read access to repository contents
-  security-events: write  # Allow security scanning permissions
+  contents: read
+  security-events: write
 
 on:
   push:
@@ -19,15 +19,18 @@ jobs:
 
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4  # Updated to version that supports Node.js 20
+        uses: actions/checkout@v4
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4  # Updated to use Node.js 20
+        uses: actions/setup-node@v4
         with:
           node-version: '20'
 
       - name: Install Dependencies
         run: npm install
+
+      - name: Install Mocha Reporter
+        run: npm install mocha-junit-reporter
 
       - name: Install Cypress Globally
         run: npm install -g cypress
@@ -35,9 +38,9 @@ jobs:
       - name: Ensure Cypress Binary is Executable
         run: sudo chmod +x $(npm bin)/cypress
 
-      - name: Run Cypress Tests with Retries
-        run: npx cypress run --retries 2  # Retry tests 2 times to account for flaky tests
-        continue-on-error: true  # Continue workflow to gather artifacts even if tests fail
+      - name: Run Cypress Tests with Debug
+        run: DEBUG=cypress:* npx cypress run --reporter mocha-junit-reporter --reporter-options mochaFile=results/test-results-[hash].xml --retries 2
+        continue-on-error: true
 
       - name: Upload Cypress Screenshots
         if: always()
@@ -64,7 +67,8 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up CodeQL
-        uses: github/codeql-action/init@v3  # Updated to v3
+        uses: github/codeql-action/init@v3
 
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v3  # Updated to v3
+        uses: github/codeql-action/analyze@v3
+
