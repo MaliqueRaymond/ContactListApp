@@ -26,12 +26,6 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Install Cypress
-        run: npx cypress install  # This ensures Cypress binary is downloaded properly
-
-      - name: Ensure Cypress Binary is Executable
-        run: chmod +x $(npm bin)/cypress
-
       - name: Run Cypress tests
         run: npx cypress run
 
