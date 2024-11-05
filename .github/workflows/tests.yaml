@@ -38,16 +38,10 @@ jobs:
       - name: Ensure Cypress Binary is Executable
         run: sudo chmod +x $(npm bin)/cypress
 
-      # Run individual Cypress test files
-      - name: Run Specific Cypress Test - Test A
-        run: DEBUG=cypress:* npx cypress run --spec 'cypress/integration/test_a_spec.js' --retries 2
-        continue-on-error: true  # Continue even if a test fails to collect artifacts for all
-
-      - name: Run Specific Cypress Test - Test B
-        run: DEBUG=cypress:* npx cypress run --spec 'cypress/integration/test_b_spec.js' --retries 2
+      # Run Specific Test File
+      - name: Run Cypress Tests for Specific Spec File
+        run: DEBUG=cypress:* npx cypress run --spec 'cypress/integration/test_a_spec.js' --reporter mocha-junit-reporter --reporter-options mochaFile=results/test-results-[hash].xml --retries 2
         continue-on-error: true
-
-      # Add similar steps for other individual spec files...
 
       - name: Upload Cypress Screenshots
         if: always()
