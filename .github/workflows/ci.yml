@@ -1,26 +1,52 @@
-name: CI
+name: CI Pipeline
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
   pull_request:
-    branches: [ main ]
+    branches:
+      - main
 
 jobs:
-  cypress:
+  # Cypress UI and API Tests
+  cypress-tests:
+    name: Run Cypress UI and API Tests
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+
       - name: Install dependencies
         run: npm install
+
       - name: Run Cypress tests
         run: npx cypress run
 
-  zap:
+  # OWASP ZAP Security Scan
+  zap-scan:
+    name: Run OWASP ZAP Security Scan
     runs-on: ubuntu-latest
+
     steps:
-      - name: ZAP Security Scan
-        uses: zaproxy/zap2docker-stable
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Run OWASP ZAP Scan
+        uses: zaproxy/action-full-scan@v0.2.0
         with:
-          args: zap.sh -quickstart -quickstart-port 8080
+          target: 'https://thinking-tester-contact-list.herokuapp.com/'  
+          rules-file: '.zap/rules.yaml'  
+          target-parameters: '-config api.disablekey=true'  
+
+      - name: Upload ZAP Report
+        uses: actions/upload-artifact@v2
+        with:
+          name: zap-report
+          path: /zap/wrk/*.html  

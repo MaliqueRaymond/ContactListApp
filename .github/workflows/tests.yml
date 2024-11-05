@@ -1,36 +1,66 @@
-name: Run UI Tests with Parallel Execution
+name: Test Pipeline
 
 on:
   push:
     branches:
       - main
   pull_request:
+    branches:
+      - main
 
 jobs:
+  # Job for Running Cypress Tests (UI and API)
   cypress-tests:
+    name: Run Cypress Tests
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        browser: [chrome, firefox]
-        os: [ubuntu-latest, windows-latest]
+
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v2
         with:
-          node-version: 20
+          node-version: '16'
 
       - name: Install dependencies
         run: npm install
 
-      - name: Install Cypress
-        run: npm install cypress --save-dev
-
-      - name: Set executable permissions for Cypress (if needed)
-        if: runner.os == 'Linux'
-        run: chmod +x ./node_modules/.bin/cypress
-
       - name: Run Cypress tests
-        run: npx cypress run --browser chrome
+        run: npx cypress run
+
+      # Upload screenshots and videos if tests fail
+      - name: Upload Cypress screenshots
+        if: failure()
+        uses: actions/upload-artifact@v2
+        with:
+          name: cypress-screenshots
+          path: cypress/screenshots
+
+      - name: Upload Cypress videos
+        if: failure()
+        uses: actions/upload-artifact@v2
+        with:
+          name: cypress-videos
+          path: cypress/videos
+
+  # Job for Running OWASP ZAP Security Scan
+  zap-scan:
+    name: Run OWASP ZAP Security Scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Run OWASP ZAP Full Scan
+        uses: zaproxy/action-full-scan@v0.2.0
+        with:
+          target: 'https://thinking-tester-contact-list.herokuapp.com/'  
+          report-format: 'HTML'  
+          rules-file: '.zap/rules.yaml'  
+      - name: Upload ZAP Report
+        uses: actions/upload-artifact@v2
+        with:
+          name: zap-report
+          path: /zap/wrk/*.html
