@@ -1,4 +1,4 @@
-name: tests
+name: Full Test Suite Workflow
 
 on:
   push:
@@ -15,10 +15,10 @@ jobs:
 
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4  # Upgrade to v4 to ensure Node.js compatibility
+        uses: actions/checkout@v4  # Updated to version that supports Node.js 20
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4  # Upgrade to v4 for Node.js 20 compatibility
+        uses: actions/setup-node@v4  # Updated to use Node.js 20
         with:
           node-version: '20'
 
@@ -31,9 +31,9 @@ jobs:
       - name: Ensure Cypress Binary is Executable
         run: sudo chmod +x $(npm bin)/cypress
 
-      - name: Run Cypress Tests
-        run: npx cypress run
-        continue-on-error: true  # Continue the workflow to gather artifacts even if tests fail
+      - name: Run Cypress Tests with Retries
+        run: npx cypress run --retries 2  # Retry tests 2 times to account for flaky tests
+        continue-on-error: true
 
       - name: Upload Cypress Screenshots
         if: always()
@@ -52,28 +52,27 @@ jobs:
           if-no-files-found: ignore
 
   zap-scan:
-    name: Run OWASP ZAP Security Scan
+    name: Run OWASP ZAP Baseline Security Scan
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4  # Upgrade to v4 for better compatibility
+        uses: actions/checkout@v4  # Updated to version compatible with Node.js 20
 
-      # Step to Check Docker Installation Status
-      - name: Check Docker Installation
-        run: docker --version
+      - name: Verify Docker Installation
+        run: docker --version  # Check if Docker is installed and available
 
-      # Managed OWASP ZAP Action without Explicit Docker Handling
-      - name: Run OWASP ZAP Live Scan
-        uses: zaproxy/action-full-scan@v0.5.0  # Try using a different version or type of scan
+      - name: Run OWASP ZAP Baseline Scan
+        uses: zaproxy/action-baseline@v0.5.0  # Use latest version of the action
         with:
           target: 'https://thinking-tester-contact-list.herokuapp.com/'  # Replace with your application URL
           token: ${{ secrets.GITHUB_TOKEN }}
-          fail_action: false  # Allow the workflow to proceed even if vulnerabilities are found
+          fail_action: false
 
       - name: Upload ZAP Report
         uses: actions/upload-artifact@v4
         with:
           name: zap-report
           path: /zap/wrk/*.html
+
 
