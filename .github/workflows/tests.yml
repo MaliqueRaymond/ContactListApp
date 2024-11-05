@@ -56,11 +56,13 @@ jobs:
       - name: Run OWASP ZAP Full Scan
         uses: zaproxy/action-full-scan@v0.2.0
         with:
-          target: 'https://thinking-tester-contact-list.herokuapp.com/'  
+          target: 'https://thinking-tester-contact-list.herokuapp.com/'  # Replace with your target URL if different
+          docker_name: 'owasp/zap2docker-weekly'  # Updated Docker image name
 
       - name: Upload ZAP Report
         uses: actions/upload-artifact@v4
         with:
           name: zap-report-${{ github.run_id }}
           path: /zap/wrk/*.html
+
 
