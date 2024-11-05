@@ -59,11 +59,15 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4  # Updated to version compatible with Node.js 20
 
+      # Step to Verify Docker Installation
       - name: Verify Docker Installation
-        run: docker --version  # Check if Docker is installed and available
+        run: |
+          docker --version
+          docker run hello-world  # Run a simple Docker container to verify Docker is working
 
+      # Managed OWASP ZAP Action with Node.js 20 Support (if available)
       - name: Run OWASP ZAP Baseline Scan
-        uses: zaproxy/action-baseline@v0.5.0  # Use latest version of the action
+        uses: zaproxy/action-baseline@v0.6.0  # Use a newer version if available to support Node.js 20
         with:
           target: 'https://thinking-tester-contact-list.herokuapp.com/'  # Replace with your application URL
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -74,5 +78,4 @@ jobs:
         with:
           name: zap-report
           path: /zap/wrk/*.html
-
 
