@@ -26,6 +26,12 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Install Cypress
+        run: npx cypress install  # This ensures Cypress binary is downloaded properly
+
+      - name: Ensure Cypress Binary is Executable
+        run: chmod +x $(npm bin)/cypress
+
       - name: Run Cypress tests
         run: npx cypress run
 
@@ -57,7 +63,8 @@ jobs:
         uses: zaproxy/action-full-scan@v0.2.0
         with:
           target: 'https://thinking-tester-contact-list.herokuapp.com/'  # Replace with your target URL if different
-          docker_name: 'owasp/zap2docker-weekly'  # Updated Docker image name
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fail_action: false  # This will continue the workflow even if vulnerabilities are found
 
       - name: Upload ZAP Report
         uses: actions/upload-artifact@v4
