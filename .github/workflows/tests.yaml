@@ -1,4 +1,4 @@
-name: Full Test Suite Workflow
+name: tests
 
 on:
   push:
@@ -15,12 +15,12 @@ jobs:
 
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4  # Upgrade to v4 to ensure Node.js compatibility
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4  # Upgrade to v4 for Node.js 20 compatibility
         with:
-          node-version: '20'  # Updated to Node.js 20 for future-proofing
+          node-version: '20'
 
       - name: Install Dependencies
         run: npm install
@@ -33,7 +33,7 @@ jobs:
 
       - name: Run Cypress Tests
         run: npx cypress run
-        continue-on-error: true
+        continue-on-error: true  # Continue the workflow to gather artifacts even if tests fail
 
       - name: Upload Cypress Screenshots
         if: always()
@@ -52,24 +52,24 @@ jobs:
           if-no-files-found: ignore
 
   zap-scan:
-    name: Run OWASP ZAP Baseline Security Scan
+    name: Run OWASP ZAP Security Scan
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4  # Upgrade to v4 for better compatibility
 
       # Step to Check Docker Installation Status
       - name: Check Docker Installation
         run: docker --version
 
       # Managed OWASP ZAP Action without Explicit Docker Handling
-      - name: Run OWASP ZAP Baseline Scan
-        uses: zaproxy/action-baseline@v0.5.0  # Update to the latest version
+      - name: Run OWASP ZAP Live Scan
+        uses: zaproxy/action-full-scan@v0.5.0  # Try using a different version or type of scan
         with:
-          target: 'https://thinking-tester-contact-list.herokuapp.com/'
+          target: 'https://thinking-tester-contact-list.herokuapp.com/'  # Replace with your application URL
           token: ${{ secrets.GITHUB_TOKEN }}
-          fail_action: false
+          fail_action: false  # Allow the workflow to proceed even if vulnerabilities are found
 
       - name: Upload ZAP Report
         uses: actions/upload-artifact@v4
