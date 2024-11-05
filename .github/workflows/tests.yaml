@@ -38,7 +38,7 @@ jobs:
       - name: Ensure Cypress Binary is Executable
         run: sudo chmod +x $(npm bin)/cypress
 
-      - name: Run Cypress Tests with Debug
+      - name: Run Cypress Tests with Debug and Retries
         run: DEBUG=cypress:* npx cypress run --reporter mocha-junit-reporter --reporter-options mochaFile=results/test-results-[hash].xml --retries 2
         continue-on-error: true
 
