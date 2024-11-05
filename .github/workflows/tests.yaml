@@ -35,10 +35,11 @@ jobs:
       - name: Install Cypress Globally
         run: npm install -g cypress
 
-      - name: Ensure Cypress Binary is Executable
-        run: sudo chmod +x $(npm bin)/cypress
+      # Verify Cypress Installation
+      - name: Verify Cypress Version
+        run: npx cypress --version
 
-      # Run Cypress Tests in Headed Mode for Stability
+      # Run Cypress Tests
       - name: Run Cypress Tests for Specific Spec File with Debugging
         run: DEBUG=cypress:* npx cypress run --headed --spec 'cypress/integration/test_a_spec.js' --reporter mocha-junit-reporter --reporter-options mochaFile=results/test-results-[hash].xml --retries 2
         continue-on-error: true
